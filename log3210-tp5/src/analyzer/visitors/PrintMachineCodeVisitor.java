@@ -199,6 +199,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     }
 
     public String getReg(String src, int node, ArrayList<Vector<String>> maybe_dead) {
+        if(src.contains("#")) return src;
         // TODO 1: if exists, get existing register and return
         int associatedRegister = this.findAssociatedRegister(src);
         if(associatedRegister != -1) return "R"+associatedRegister;
@@ -219,6 +220,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         int index = this.findAssociatedRegister(src);
         if(index == -1) return;
         this.REGISTERS.get(index).remove(src);
+        this.USE_QUEUE.remove("R"+index);
         // Attention de voir s'il faut faire un ST ou non... (ST si c'est une variable vive)
     }
 
@@ -251,6 +253,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     }
 
     private void updateUse(String register){
+        if(register.contains("#")) return;
         if(this.USE_QUEUE.contains(register))return;
         this.USE_QUEUE.add(register);
         String variable = this.getVariableFromRegister(register);
