@@ -55,16 +55,33 @@ CLEAR
 LD R0, a
 LD R1, b
 ADD R2, R1, R0
-LD R3, d
-MUL R4, R3, R2
-LD R5, c
-MUL R6, R5, R1
-ADD R7, R4, R6
-MUL R8, R3, R1
-MUL R9, R5, R0
-ADD R10, R8, R9
-ST b, R7
-ST a, R10
+ST a, R0
+ST b, R1
+LD R0, d
+MUL R1, R0, R2
+ST t0, R2
+ST d, R0
+ST t1, R1
+LD R2, b
+LD R0, c
+MUL R1, R0, R2
+ST b, R2
+LD R0, t1
+ADD R2, R0, R1
+ST t2, R1
+ST t3, R2
+LD R0, b
+LD R1, d
+MUL R2, R1, R0
+ST d, R1
+ST t, R2
+LD R0, a
+LD R1, c
+MUL R2, R1, R0
+ST a, R0
+ADD R0, R2, R2
+ST a, R0
+ST b, R0
 // TODO:: END THE BLOCK 1 HERE ABOVE !
 
 CLEAR
@@ -78,19 +95,7 @@ CLEAR
 //      i = i / 2;
 
 // TODO:: PUT THE BLOCK 2 HERE !
-LD R0, c
-MUL R1, #2, R0
-LD R2, d
-ADD R3, R1, R2
-MUL R4, R2, R3
-MUL R5, R0, R0
-MUL R6, R2, R2
-ADD R7, R5, R6
-LD R0, i
-DIV R2, R0, #2
-ST i, R2
-ST d, R4
-ST c, R7
+
 // TODO:: END THE BLOCK 2 HERE ABOVE!
 
 

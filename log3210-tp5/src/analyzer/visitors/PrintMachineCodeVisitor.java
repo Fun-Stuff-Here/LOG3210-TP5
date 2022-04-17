@@ -195,6 +195,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
      */
     public String setReg(String src, int i) {
         // TODO : Met une variable "src" dans le registre "i". Retourne le nom du registre
+        this.REGISTERS.get(i).add(src);
         return "R" + i;
     }
 
@@ -205,24 +206,46 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         if(associatedRegister != -1) return "R"+associatedRegister;
         // TODO 2: if there is an empty register, put in empty register and return
         int nextEmptyRegister = this.findNextRegister();
-        if(nextEmptyRegister != -1){
-            this.REGISTERS.get(nextEmptyRegister).add(src);
-            return "R"+ nextEmptyRegister;
-        }
+        if(nextEmptyRegister != -1) return this.setReg(src,nextEmptyRegister);
         // TODO 3: if there if dead variables in registers, put in dead register and return
+        int nextDeadVariable = this.findNextDeadVariable(src,node);
+        if(nextDeadVariable != -1) {
+            this.removeReg(this.REGISTERS.get(nextDeadVariable).get(0));
+            return this.setReg(src,nextDeadVariable);
+        }
         // TODO 4: other register selection (ex: put in oldest register and return)
-
-        return ""; // default for compilation, should not be in your code!!
+        return this.spill(src);
     }
 
-    public void removeReg(String src) {
+    private int findNextDeadVariable(String variable,int node){
+        for(int i=0; i <this.REGISTERS.size();i++){
+            if(!this.OUT.get(node).contains(variable)) return i;
+        }
+        return -1;
+    }
+
+    private String spill(String variable){
+        String lastUsedRegister = this.USE_QUEUE.remove(0);
+        String lastUsed = this.getVariableFromRegister(lastUsedRegister);
+        int variableRegister = this.findAssociatedRegister(lastUsed);
+        this.USE_QUEUE.add("R" + variableRegister);
+        this.printStore(lastUsed);
+        int index = this.removeReg(lastUsed);
+        if(index==-1) return  "";
+        return this.setReg(variable,index);
+    }
+
+    public int removeReg(String src) {
         // TODO : enlève une string du registers
         int index = this.findAssociatedRegister(src);
-        if(index == -1) return;
+        if(index == -1) return-1;
         this.REGISTERS.get(index).remove(src);
         this.USE_QUEUE.remove("R"+index);
-        // Attention de voir s'il faut faire un ST ou non... (ST si c'est une variable vive)
+        // Attention de voir s'il faut faire un ST ou non... (ST si c'est une variable vive
+        return index;
     }
+
+
 
     private int findAssociatedRegister(String variable){
         for(int i=0; i <this.REGISTERS.size();i++){
@@ -246,7 +269,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     private void printOp(String op, String destination, String source1, String source2){
         this.updateUse(source2);
         this.updateUse(source1);
-        this.USE_QUEUE.add(destination);
+        if(!this.USE_QUEUE.contains(destination)) this.USE_QUEUE.add(destination);
 
         String toPrint = this.OP.get(op)+" "+ destination + ", "+source1 + ", "+source2;
         m_writer.println(toPrint);
@@ -255,18 +278,20 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     private void updateUse(String register){
         if(register.contains("#")) return;
         if(this.USE_QUEUE.contains(register))return;
-        this.USE_QUEUE.add(register);
         String variable = this.getVariableFromRegister(register);
+        this.USE_QUEUE.add(register);
         this.printLoad(register,variable);
     }
 
     private String getVariableFromRegister(String register){
         int index= this.indexForRegister(register);
+        if(index <0) return "";
         if(this.REGISTERS.get(index).size() <1) return "";
         return this.REGISTERS.get(index).get(0);
     }
 
     private int indexForRegister(String register){
+        if(register.isEmpty()) return -1;
         return Integer.parseInt(register.substring(1));
     }
 
