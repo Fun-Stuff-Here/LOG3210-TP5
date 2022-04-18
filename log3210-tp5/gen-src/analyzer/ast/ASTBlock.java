@@ -20,4 +20,4 @@ class ASTBlock extends SimpleNode {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=56d8d18eb509d6f33016cd0db33a0f93 (do not edit this line) */
+/* JavaCC - OriginalChecksum=b16dbe75661498269ae889e9c671f829 (do not edit this line) */

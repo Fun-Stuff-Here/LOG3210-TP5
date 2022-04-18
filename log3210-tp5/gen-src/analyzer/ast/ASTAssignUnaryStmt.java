@@ -20,4 +20,4 @@ class ASTAssignUnaryStmt extends SimpleNode {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=c020c6a122041ebc97d3f641f84465f4 (do not edit this line) */
+/* JavaCC - OriginalChecksum=faffeac0192ddfdc13467c3f5d9241d0 (do not edit this line) */

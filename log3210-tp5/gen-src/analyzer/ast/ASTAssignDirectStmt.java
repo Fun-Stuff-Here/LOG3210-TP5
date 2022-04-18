@@ -20,4 +20,4 @@ class ASTAssignDirectStmt extends SimpleNode {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=e93125c48afda64c22b65123965991a1 (do not edit this line) */
+/* JavaCC - OriginalChecksum=63617b55406f3e728bf6ee6068fae8b6 (do not edit this line) */

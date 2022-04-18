@@ -20,4 +20,4 @@ class ASTLive extends SimpleNode {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=56fc839de80f182ead282efed1ee7081 (do not edit this line) */
+/* JavaCC - OriginalChecksum=9d70a05849321fd058d344492b42ff47 (do not edit this line) */

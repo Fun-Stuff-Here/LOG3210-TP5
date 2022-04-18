@@ -1,0 +1,17 @@
+LD R0, c
+MUL R1, #2, R0
+LD R2, d
+ADD R3, R1, R2
+MUL R4, R2, R3
+ST c, R0
+MUL R0, R0, R0
+ST t0, R1
+MUL R1, R2, R2
+ST d, R2
+ADD R2, R0, R1
+ST t1, R3
+LD R0, i
+DIV R3, R0, #2
+ST c, R2
+ST d, R4
+ST i, R3

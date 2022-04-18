@@ -49,13 +49,14 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
 
     @Override
     public Object visit(ASTProgram node, Object data) {
-        // Visiter les enfants
         node.childrenAccept(this, null);
 
         // TODO: vider REGISTERS (et faire les ST en conséquence)
-        for(String variable :this.MODIFIED)
-            if(this.OUT.get(this.NODE-1).contains(variable))
-            this.printStore(variable);
+        for(String variable :this.MODIFIED){
+            if(this.OUT.get(this.NODE-1).contains(variable)){
+                this.printStore(variable);
+            }
+        }
         m_writer.close();
         return null;
     }
@@ -152,6 +153,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
 
         // TODO: même chose que ASTAssignStmt mais on aura toujours une expression 
         // du type "MIN #0, R*". Veuillez gérer ce cas aussi.
+        this.printOp(this.OP.get("-"),assigned,"#0",left);
         return null;
     }
 
@@ -162,7 +164,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         String assigned = (String) node.jjtGetChild(0).jjtAccept(this, null);
         String left = (String) node.jjtGetChild(1).jjtAccept(this, null);
 
-        String source = this.getReg(left, this.NODE,null );
+        String source = this.getReg(left, this.NODE,null);
         int index = this.indexForRegister(source);
         this.removeReg(assigned);
         this.REGISTERS.get(index).add(assigned);
@@ -207,7 +209,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         // TODO 2: if there is an empty register, put in empty register and return
         int nextEmptyRegister = this.findNextRegister();
         if(nextEmptyRegister != -1) return this.setReg(src,nextEmptyRegister);
-        // TODO 3: if there if dead variables in registers, put in dead register and return
+        // TODO 3: if there is dead variables in registers, put in dead register and return
         int nextDeadVariable = this.findNextDeadVariable(src,node);
         if(nextDeadVariable != -1) {
             this.removeReg(this.REGISTERS.get(nextDeadVariable).get(0));
@@ -245,8 +247,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         return index;
     }
 
-
-
     private int findAssociatedRegister(String variable){
         for(int i=0; i <this.REGISTERS.size();i++){
             if(this.REGISTERS.get(i).contains(variable)) return i;
@@ -267,20 +267,22 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     }
 
     private void printOp(String op, String destination, String source1, String source2){
-        this.updateUse(source2);
-        this.updateUse(source1);
+        this.updateUse(source2, source2.equals(destination));
+        this.updateUse(source1, source1.equals(destination));
         if(!this.USE_QUEUE.contains(destination)) this.USE_QUEUE.add(destination);
 
         String toPrint = this.OP.get(op)+" "+ destination + ", "+source1 + ", "+source2;
         m_writer.println(toPrint);
     }
 
-    private void updateUse(String register){
+    private void updateUse(String register, Boolean isSameAsDestination){
         if(register.contains("#")) return;
-        if(this.USE_QUEUE.contains(register))return;
+        if(this.USE_QUEUE.contains(register)) return;
         String variable = this.getVariableFromRegister(register);
         this.USE_QUEUE.add(register);
-        this.printLoad(register,variable);
+        if(!isSameAsDestination){
+            this.printLoad(register,variable);
+        }
     }
 
     private String getVariableFromRegister(String register){
